@@ -1,6 +1,6 @@
-const words = ['POMPOM', 'MUFFIN', 'MACAROON', 'BAGEL', 'SCONE', 'EIMBEAN', 'ILOVEYOU', 'DRINKWATER'];
-const GRID_ROWS = 14;
-const GRID_COLS = 10;
+const words = ['POMPOM']; //'MUFFIN', 'MACAROON', 'BAGEL', 'SCONE', 'EIMBEAN', 'ILOVEYOU', 'DRINKWATER'];
+const GRID_ROWS = 8;
+const GRID_COLS = 8;
 
 let grid = [];
 let selectedCells = [];
@@ -285,16 +285,43 @@ const WORDLE_ANSWER = 'BAGEL';
 const WORDLE_MAX_ATTEMPTS = 5;
 let wordleGuesses = [];
 let wordleActive = false;
+let wordleCurrentGuess = '';
+let wordleHelpVisible = false;
 
 let charactersClicked = 0;
-let totalCharacters = 8;
-const charactersToPress = 16;
+let totalCharacters = 9;
+const CLICKER_GOAL = 30;
+const CLICKER_TIME_LIMIT = 30;
+const charactersToPress = CLICKER_GOAL;
 let activeCharacters = [];
 let animationFrameId = null;
+let clickerTimeLeft = CLICKER_TIME_LIMIT;
+let clickerTimerId = null;
+let clickerRoundActive = false;
+let clickerEndTime = null;
 
 function startCharacterClikerGame() {
+	resetClickerState();
+
+	const completionMessage = document.getElementById('completionMessage');
+	const clickerSection = document.getElementById('characterClickerSection');
+
+	if (completionMessage && clickerSection) {
+		completionMessage.classList.add('hidden');
+		clickerSection.classList.remove('hidden');
+		updateClickerProgress();
+		updateClickerTimerDisplay();
+	}
+}
+
+function resetClickerState() {
 	charactersClicked = 0;
 	activeCharacters = [];
+	clickerTimeLeft = CLICKER_TIME_LIMIT;
+	clickerRoundActive = false;
+	clearInterval(clickerTimerId);
+	clickerTimerId = null;
+
 	if (animationFrameId) {
 		cancelAnimationFrame(animationFrameId);
 		animationFrameId = null;
@@ -302,19 +329,11 @@ function startCharacterClikerGame() {
 
 	const gameContainer = document.getElementById('charactersGame');
 	if (gameContainer) gameContainer.innerHTML = '';
-	
-	const completionMessage = document.getElementById('completionMessage');
-	const clickerSection = document.getElementById('characterClickerSection');
-	
-	if (completionMessage && clickerSection) {
-		completionMessage.classList.add('hidden');
-		clickerSection.classList.remove('hidden');
-		
-		// Spawn initial characters
-		spawnCharacters();
-		updateClickerProgress();
-		startCharacterAnimationLoop();
-	}
+
+	const stopClickerBtn = document.getElementById('stopClickerBtn');
+	if (stopClickerBtn) stopClickerBtn.style.display = 'none';
+	const startClickerBtn = document.getElementById('startClickerBtn');
+	if (startClickerBtn) startClickerBtn.disabled = false;
 }
 
 function spawnCharacters() {
@@ -434,41 +453,114 @@ function animateCharacters(container) {
 }
 
 function clickCharacter(char) {
-	if (char.dataset.clicked === 'true') return;
+	if (!clickerRoundActive || char.dataset.clicked === 'true') return;
 	
 	char.dataset.clicked = 'true';
 	char.classList.add('clicked');
 	
 	charactersClicked++;
 	updateClickerProgress();
-	
-	// Remove character after click animation
-	setTimeout(() => {
+
+	// Upward drift animation then cleanup
+	const x = parseFloat(char.dataset.x) || 0;
+	const y = parseFloat(char.dataset.y) || 0;
+	const driftX = (Math.random() * 260 - 130);
+	const apexY = y - (80 + Math.random() * 80);
+	const rot = (Math.random() * 120 + 120) * (Math.random() < 0.5 ? -1 : 1);
+
+	char.animate([
+		{ transform: `translate(${x}px, ${y}px) rotate(0deg)`, opacity: 1 },
+		{ transform: `translate(${x + driftX}px, ${apexY}px) rotate(${rot}deg)`, opacity: 0 }
+	], {
+		duration: 650,
+		easing: 'ease-out',
+		fill: 'forwards'
+	}).onfinish = () => {
 		char.remove();
 		activeCharacters = activeCharacters.filter(c => c !== char);
-		
-		// Spawn new character to replace it
 		if (charactersClicked < charactersToPress) {
 			spawnCharacters();
 		} else {
-			completeClickerGame();
+			onClickerSuccess();
 		}
-	}, 300);
+	};
 }
 
 function updateClickerProgress() {
 	const progress = document.getElementById('clickerProgress');
-	progress.textContent = `Sent to heaven (killed): ${charactersClicked} / ${charactersToPress}`;
+	if (progress) {
+		progress.textContent = `Sent to POM POM heaven: ${charactersClicked} / ${charactersToPress}`;
+	}
 }
 
-function completeClickerGame() {
-	const clickerSection = document.getElementById('characterClickerSection');
-	const wordleSection = document.getElementById('wordleSection');
+function updateClickerTimerDisplay() {
+	const timerEl = document.getElementById('clickerTimer');
+	if (timerEl) {
+		const display = clickerTimeLeft <= 5 ? clickerTimeLeft.toFixed(1) : Math.ceil(clickerTimeLeft);
+		timerEl.textContent = `Time remaining: ${display}s`;
+	}
+}
 
+function startClickerRound() {
+	if (clickerRoundActive) return;
+	resetClickerState();
+	spawnCharacters();
+	updateClickerProgress();
+	clickerRoundActive = true;
+	const stopClickerBtn = document.getElementById('stopClickerBtn');
+	if (stopClickerBtn) stopClickerBtn.style.display = 'inline-block';
+	const startClickerBtn = document.getElementById('startClickerBtn');
+	if (startClickerBtn) startClickerBtn.disabled = true;
+	updateClickerTimerDisplay();
+	startCharacterAnimationLoop();
+	clickerEndTime = performance.now() + CLICKER_TIME_LIMIT * 1000;
+	clickerTimerId = setInterval(() => {
+		const remainingMs = Math.max(0, clickerEndTime - performance.now());
+		clickerTimeLeft = remainingMs / 1000;
+		updateClickerTimerDisplay();
+		if (remainingMs <= 0) {
+			onClickerFail();
+		}
+	}, 100);
+}
+
+function stopClickerRound(messageText) {
+	clickerRoundActive = false;
+	clearInterval(clickerTimerId);
+	clickerTimerId = null;
+ 	clickerEndTime = null;
 	if (animationFrameId) {
 		cancelAnimationFrame(animationFrameId);
 		animationFrameId = null;
 	}
+	if (messageText) {
+		const progress = document.getElementById('clickerProgress');
+		if (progress) progress.textContent = messageText;
+	}
+	const gameContainer = document.getElementById('charactersGame');
+	if (gameContainer) gameContainer.innerHTML = '';
+	activeCharacters = [];
+	const stopClickerBtn = document.getElementById('stopClickerBtn');
+	if (stopClickerBtn) stopClickerBtn.style.display = 'none';
+	const startClickerBtn = document.getElementById('startClickerBtn');
+	if (startClickerBtn) startClickerBtn.disabled = false;
+}
+
+function onClickerFail() {
+	stopClickerRound('Nooo you we\'re so close!');
+	charactersClicked = 0;
+}
+
+function onClickerSuccess() {
+	stopClickerRound();
+	completeClickerGame();
+}
+
+function completeClickerGame() {
+	const clickerSection = document.getElementById('characterClickerSection');
+	const clickerCompletion = document.getElementById('clickerCompletion');
+	const wordleSection = document.getElementById('wordleSection');
+	stopClickerRound();
 
 	// Fade out any remaining characters
 	for (const char of activeCharacters) {
@@ -487,25 +579,37 @@ function completeClickerGame() {
 	}
 	
 	createConfetti();
-	
-	// Move to Wordle after a delay
-	setTimeout(() => {
-		clickerSection.classList.add('hidden');
-		if (wordleSection) {
-			wordleSection.classList.remove('hidden');
-			startWordleGame();
+
+	// Show completion panel similar to word search completion
+	if (clickerSection) clickerSection.classList.add('hidden');
+	if (clickerCompletion) {
+		clickerCompletion.classList.remove('hidden');
+		const toWordleBtn = document.getElementById('toWordleBtn');
+		if (toWordleBtn) {
+			toWordleBtn.onclick = () => {
+				clickerCompletion.classList.add('hidden');
+				if (wordleSection) {
+					wordleSection.classList.remove('hidden');
+					startWordleGame();
+				}
+			};
 		}
-	}, 2000);
+	} else if (wordleSection) {
+		wordleSection.classList.remove('hidden');
+		startWordleGame();
+	}
 }
 
 // Wordle helpers
 function startWordleGame() {
 	wordleActive = true;
 	wordleGuesses = [];
+	wordleCurrentGuess = '';
+	wordleHelpVisible = false;
 	const grid = document.getElementById('wordleGrid');
 	const message = document.getElementById('wordleMessage');
-	const input = document.getElementById('wordleInput');
 	if (message) message.textContent = '';
+	resetWordleHelpUI();
 	if (grid) {
 		grid.innerHTML = '';
 		for (let i = 0; i < WORDLE_MAX_ATTEMPTS; i++) {
@@ -518,16 +622,21 @@ function startWordleGame() {
 			}
 		}
 	}
-	if (input) {
-		input.value = '';
-		input.focus();
-	}
+	buildWordleKeyboard();
+	renderWordleState();
+}
+
+function resetWordleHelpUI() {
+	const helpText = document.getElementById('wordleHelpText');
+	const helpToggle = document.getElementById('wordleHelpToggle');
+	if (helpText) helpText.classList.add('hidden');
+	if (helpToggle) helpToggle.textContent = 'Press here if you don\'t';
 }
 
 function resetWordleGameWithMessage(text) {
 	const message = document.getElementById('wordleMessage');
 	if (message) message.textContent = text;
-	setTimeout(() => startWordleGame(), 1300);
+	setTimeout(() => startWordleGame(), 2300);
 }
 
 const tryAgainMessages = [
@@ -540,11 +649,9 @@ const tryAgainMessages = [
 
 function handleWordleSubmit() {
 	if (!wordleActive) return;
-	const input = document.getElementById('wordleInput');
 	const message = document.getElementById('wordleMessage');
-	if (!input) return;
 
-	const guessRaw = input.value.trim().toUpperCase();
+	const guessRaw = wordleCurrentGuess.trim().toUpperCase();
 	if (guessRaw.length !== WORDLE_ANSWER.length) {
 		if (message) message.textContent = 'Needs to be 5 letters!';
 		return;
@@ -560,12 +667,13 @@ function handleWordleSubmit() {
 	}
 
 	if (wordleGuesses.length >= WORDLE_MAX_ATTEMPTS) {
-		resetWordleGameWithMessage('I\'ll give you another chance :P');
+		resetWordleGameWithMessage('Good try! I\'ll give you another chance because I love you.');
 		return;
 	}
 
-	input.value = '';
+	wordleCurrentGuess = '';
 	if (message) message.textContent = tryAgainMessages[Math.min(wordleGuesses.length - 1, tryAgainMessages.length - 1)];
+	renderWordleState();
 }
 
 function renderWordleState() {
@@ -573,6 +681,12 @@ function renderWordleState() {
 	if (!grid) return;
 	const cells = grid.querySelectorAll('.wordle-cell');
 	const answerArr = WORDLE_ANSWER.split('');
+
+	// Reset all cells before applying state
+	cells.forEach(cell => {
+		cell.textContent = '';
+		cell.classList.remove('filled', 'correct', 'present', 'absent', 'wave-cell');
+	});
 
 	wordleGuesses.forEach((guess, row) => {
 		const guessArr = guess.split('');
@@ -606,6 +720,16 @@ function renderWordleState() {
 			cell.classList.add(states[col]);
 		}
 	});
+
+	// Render current in-progress guess on next row
+	const currentRow = wordleGuesses.length;
+	for (let i = 0; i < wordleCurrentGuess.length; i++) {
+		const idx = currentRow * WORDLE_ANSWER.length + i;
+		const cell = cells[idx];
+		if (!cell) continue;
+		cell.textContent = wordleCurrentGuess[i];
+		cell.classList.add('filled', 'wave-cell');
+	}
 }
 
 function completeWordleGame() {
@@ -717,10 +841,71 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	const wordleSubmit = document.getElementById('wordleSubmit');
 	if (wordleSubmit) wordleSubmit.onclick = handleWordleSubmit;
-	const wordleInput = document.getElementById('wordleInput');
-	if (wordleInput) {
-		wordleInput.addEventListener('keydown', (e) => {
-			if (e.key === 'Enter') handleWordleSubmit();
+	buildWordleKeyboard();
+
+	const startClickerBtn = document.getElementById('startClickerBtn');
+	const stopClickerBtn = document.getElementById('stopClickerBtn');
+	if (startClickerBtn) startClickerBtn.addEventListener('click', startClickerRound);
+	if (stopClickerBtn) stopClickerBtn.addEventListener('click', () => stopClickerRound('Force stopped.. Okay interesting'));
+
+	const helpToggle = document.getElementById('wordleHelpToggle');
+	if (helpToggle) {
+		helpToggle.addEventListener('click', () => {
+			wordleHelpVisible = !wordleHelpVisible;
+			const helpText = document.getElementById('wordleHelpText');
+			if (helpText) {
+				helpText.classList.toggle('hidden', !wordleHelpVisible);
+			}
+			helpToggle.textContent = wordleHelpVisible ? 'Hide how to play' : 'Press here if you don\'t';
 		});
 	}
 });
+
+function buildWordleKeyboard() {
+	const keyboard = document.getElementById('wordleKeyboard');
+	if (!keyboard) return;
+	keyboard.innerHTML = '';
+
+	const layout = [
+		['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+		['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+		['Z', 'X', 'C', 'V', 'B', 'N', 'M', 'BACK']
+	];
+
+	for (i = 0; i < layout.length; i++) {
+		const row = layout[i];
+		const rowEl = document.createElement('div');
+		rowEl.className = 'key-row';
+
+		if (i !== 2) {
+			rowEl.classList.add('long-key-row');
+		}
+
+		for (const key of row) {
+			const btn = document.createElement('button');
+			btn.className = 'key';
+			if (key === 'BACK') {
+				btn.classList.add('key-back');
+				btn.textContent = '⌫';
+			} else {
+				btn.textContent = key;
+			}
+			btn.addEventListener('click', () => handleWordleKey(key));
+			rowEl.appendChild(btn);
+		}
+
+		keyboard.appendChild(rowEl);
+	}
+}
+
+function handleWordleKey(key) {
+	if (!wordleActive) return;
+	if (key === 'BACK') {
+		wordleCurrentGuess = wordleCurrentGuess.slice(0, -1);
+		renderWordleState();
+		return;
+	}
+	if (wordleCurrentGuess.length >= WORDLE_ANSWER.length) return;
+	wordleCurrentGuess += key;
+	renderWordleState();
+}

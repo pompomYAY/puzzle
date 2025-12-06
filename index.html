@@ -30,20 +30,34 @@
 			</div>
 			<div id="characterClickerSection" class="clicker-section hidden">
 				<h2 class="word-list-header">PRESS THE POM POOMS!</h2>
-				<p class="completion-sub no-top-pad">Don't worry when they disappear they actually get teleported to heaven with other pom poms!</p>
+				<p class="completion-sub no-top-pad">Press start below to begin!</p>
 				<div id="clickerContainer" class="clicker-container">
 					<div id="charactersGame" class="characters-game"></div>
 				</div>
 				<div id="clickerProgress" class="clicker-progress"></div>
+				<div class="clicker-controls">
+					<div id="clickerTimer" class="clicker-timer">Time: 30s</div>
+					<div class="clicker-control-buttons">
+						<button id="startClickerBtn" class="clicker-btn">Start</button>
+						<button id="stopClickerBtn" class="clicker-btn secondary">Stop</button>
+					</div>
+				</div>
+			</div>
+			<div id="clickerCompletion" class="completion hidden">
+				<h2>YAY! YOU PRESSED THEM ALL!!</h2>
+				<p class="completion-sub">They’re all safe in pom pom heaven now (probably)</p>
+				<button id="toWordleBtn" class="next-game-btn">Next Game</button>
 			</div>
 			<div id="wordleSection" class="wordle-section hidden">
 				<h2 class="word-list-header">SO CLOSE!! FINAL WORDLE!</h2>
-				<p class="completion-sub no-top-pad">I'm hoping you know how wordle works!</p>
-				<div id="wordleGrid" class="wordle-grid"></div>
-				<div class="wordle-input-row">
-					<input id="wordleInput" type="text" maxlength="5" autocomplete="off" placeholder="your guess" />
-					<button id="wordleSubmit" class="next-game-btn">Submit</button>
+				<p class="completion-sub no-top-pad">I'm hoping you know how to play! <span id="wordleHelpToggle" class="wordle-help-toggle">Show how to play!</span></p>
+				
+				<div id="wordleHelpText" class="wordle-help-text hidden">
+					<p>Guess the <b>five</b> letter word. When a tile turns orange, it means the letter is somewhere in the word. If the tile turns green, it means the letter is in the same column. Good luck!</p>
 				</div>
+				<div id="wordleGrid" class="wordle-grid"></div>
+				<div id="wordleKeyboard" class="wordle-keyboard"></div>
+				<button id="wordleSubmit" class="next-game-btn">Submit</button>
 				<div id="wordleMessage" class="wordle-message"></div>
 			</div>
 			<div id="finalCompletion" class="final-completion-message hidden">
