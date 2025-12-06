@@ -11,8 +11,8 @@
 
 <body>
 	<div class="hero">
-		<h1>POM POM THEMED WORD SEARCH!!!</h1>
-		<p class="subtitle">I hope you like the theme! You'll have to complete this word search for a hint!</p>
+		<h1>POM POM THEMED HINT HUNT!!!</h1>
+		<p class="subtitle">I hope you like the theme! You'll have to complete these few minigames for a hint!</p>
 	</div>
 	<div class="container">
 		<div class="content">
@@ -24,7 +24,31 @@
 			</div>
 			<div id="completionMessage" class="completion hidden">
 				<h2>YAY! YOU COMPLETED IT!!</h2>
-				<p class="completion-sub"><b>Your hint:</b> The cover of the present hides more than what you can see</p>
+				<p class="completion-sub">I love word searches so I felt like I really had to add one yk!</p>
+				<p class="completion-sub-2">When you're ready, you can continue onto the next minigame!!</p>
+				<button id="nextGameBtn" class="next-game-btn">Next Game</button>
+			</div>
+			<div id="characterClickerSection" class="clicker-section hidden">
+				<h2 class="word-list-header">PRESS THE POM POOMS!</h2>
+				<p class="completion-sub" style="padding-top: 0px;">Don't worry when they disappear they actually get teleported to heaven with other pom poms!</p>
+				<div id="clickerContainer" class="clicker-container">
+					<div id="charactersGame" class="characters-game"></div>
+				</div>
+				<div id="clickerProgress" class="clicker-progress"></div>
+			</div>
+			<div id="wordleSection" class="wordle-section hidden">
+				<h2 class="word-list-header">SO CLOSE!! FINAL WORDLE!</h2>
+				<p class="completion-sub" style="padding-top: 0px;">I'm hoping you know how wordle works!</p>
+				<div id="wordleGrid" class="wordle-grid"></div>
+				<div class="wordle-input-row">
+					<input id="wordleInput" type="text" maxlength="5" autocomplete="off" placeholder="your guess" />
+					<button id="wordleSubmit" class="next-game-btn">Submit</button>
+				</div>
+				<div id="wordleMessage" class="wordle-message"></div>
+			</div>
+			<div id="finalCompletion" class="final-completion-message hidden">
+				<h2>YAY! YOU COMPLETED EVERY MINIGAME!!</h2>
+				<p class="completion-sub"><b>Your hint:</b> <i>"The cover of the present hides more than what you can see"</i></p>
 				<p class="completion-sub-2">Thanks sm for playing, message me if you need any help!</p>
 			</div>
 			<button id="resetBtn" class="reset-btn">Reset Search</button>

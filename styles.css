@@ -1,3 +1,5 @@
+/* Styles for the Puzzle Game */
+
 * {
 	margin: 0;
 	padding: 0;
@@ -72,17 +74,14 @@ h1 {
 	font-size: 2.2em;
 	font-weight: 800;
 	text-shadow: 2px 2px 4px rgba(255, 215, 130, 0.35);
-	/* -webkit-text-stroke: 1px rgba(118, 86, 42, 0.5); */
 }
 
 .word-list-header {
 	text-align: center;
 	color: #6d4c41;
-	margin-bottom: 8px;
+	margin-bottom: 0px;
 	font-size: 1.4em;
 	font-weight: 700;
-	padding: 0px;
-	margin: 0px;
 }
 
 .subtitle {
@@ -171,10 +170,11 @@ h2 {
 	padding: 20px 12px;
 	background: rgba(255, 254, 247, 0.4);
 	border-radius: 12px;
+	animation: slideUp 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 
 .hidden {
-	display: none;
+	display: none !important;
 }
 
 .completion-sub {
@@ -184,7 +184,8 @@ h2 {
 	line-height: 1.4;
 }
 
-.completion-sub-2, #completion-sub {
+.completion-sub-2,
+#completion-sub {
 	margin-top: 12px;
 	font-size: 1em;
 	font-style: italic;
@@ -237,30 +238,18 @@ h2 {
 }
 
 @keyframes bg-pan {
-	from {
-		background-position: 0 0, 0 0;
-	}
-	to {
-		background-position: 400px 400px, 400px 400px;
-	}
+	from { background-position: 0 0, 0 0; }
+	to { background-position: 400px 400px, 400px 400px; }
 }
 
 @keyframes wave {
-	0%, 100% {
-		transform: translateY(0);
-	}
-	50% {
-		transform: translateY(-4px);
-	}
+	0%, 100% { transform: translateY(0); }
+	50% { transform: translateY(-4px); }
 }
 
 @keyframes wave-slow {
-	0%, 100% {
-		transform: translateY(0);
-	}
-	50% {
-		transform: translateY(-4px);
-	}
+	0%, 100% { transform: translateY(0); }
+	50% { transform: translateY(-4px); }
 }
 
 .wave-letter {
@@ -294,4 +283,210 @@ h1 .wave-letter {
 
 .reset-btn:active {
 	transform: translateY(0) scale(0.99);
+}
+
+#confetti-container {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	overflow: hidden;
+	z-index: 9999;
+}
+
+.confetti {
+	position: absolute;
+	width: 12px;
+	height: 12px;
+	top: -10px;
+	opacity: 1;
+	animation: confetti-fall linear forwards;
+}
+
+@keyframes confetti-fall {
+	to { transform: translateY(100vh) rotateZ(360deg); opacity: 0; }
+}
+
+/* Character Clicker Minigame */
+.clicker-section {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	padding: 20px;
+	background: rgba(255, 254, 247, 0.5);
+	border-radius: 12px;
+}
+
+.next-game-btn {
+	padding: 12px 30px;
+	background: #ffd54f;
+	color: #6d4c41;
+	border: none;
+	border-radius: 20px;
+	font-size: 1.2em;
+	font-weight: bold;
+	cursor: pointer;
+	transition: transform 0.2s ease, box-shadow 0.25s ease, background 0.25s ease;
+	align-self: center;
+	box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3);
+	margin-top: 15px;
+}
+
+.next-game-btn:hover {
+	background: #ffca28;
+	transform: translateY(-2px) scale(1.01);
+	box-shadow: 0 6px 15px rgba(255, 193, 7, 0.45);
+}
+
+.next-game-btn:active {
+	transform: translateY(0) scale(0.99);
+}
+
+.clicker-container {
+	width: 100%;
+	height: 300px;
+	background: white;
+	border: 3px solid #d4a373;
+	border-radius: 10px;
+	position: relative;
+	overflow: hidden;
+	box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.characters-game {
+	width: 100%;
+	height: 100%;
+	position: relative;
+}
+
+.clickable-character {
+	position: absolute;
+	width: 60px;
+	height: 60px;
+	cursor: pointer;
+	user-select: none;
+}
+
+.clickable-character:hover {
+	filter: brightness(1.1);
+}
+
+.clickable-character img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	pointer-events: none;
+}
+
+.clickable-character.clicked {
+	animation: character-pop 0.3s ease-out forwards;
+}
+
+@keyframes character-pop {
+	0% { opacity: 1; }
+	100% { opacity: 0; }
+}
+
+.clicker-progress {
+	text-align: center;
+	font-size: 1.1em;
+	font-weight: 600;
+	color: #8d6e63;
+	padding: 10px;
+	background: rgba(255, 253, 240, 0.6);
+	border-radius: 8px;
+}
+
+.final-completion-message {
+	text-align: center;
+	padding: 30px 20px;
+	background: rgba(255, 254, 247, 0.6);
+	border-radius: 12px;
+	margin-top: 20px;
+	animation: slideUp 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+@keyframes slideUp {
+	from { opacity: 0; transform: translateY(20px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+/* Wordle Minigame */
+.wordle-section {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	padding: 18px;
+	background: rgba(255, 254, 247, 0.55);
+	border-radius: 12px;
+}
+
+.wordle-grid {
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+	gap: 6px;
+	justify-items: center;
+	align-items: center;
+	width: 100%;
+	max-width: 360px;
+	margin: 0 auto;
+}
+
+.wordle-cell {
+	width: 60px;
+	height: 60px;
+	border-radius: 8px;
+	background: #fffdf5;
+	border: 2px solid #e0c080;
+	font-weight: 800;
+	font-size: 1.4em;
+	color: #6d4c41;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-transform: uppercase;
+	transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.wordle-cell.filled { border-color: #d4a373; }
+.wordle-cell.correct { background: #a5d6a7; color: #2e7d32; border-color: #81c784; }
+.wordle-cell.present { background: #ffe082; color: #8a6d3b; border-color: #ffca28; }
+.wordle-cell.absent { background: #e0e0e0; color: #6d6d6d; border-color: #bdbdbd; }
+
+.wordle-input-row {
+	display: flex;
+	gap: 8px;
+	justify-content: center;
+	align-items: center;
+	flex-wrap: wrap;
+}
+
+#wordleInput {
+	padding: 10px 12px;
+	border: 2px solid #d4a373;
+	border-radius: 10px;
+	font-size: 1.1em;
+	color: #4c3e23;
+	max-width: 200px;
+	text-align: center;
+	text-transform: uppercase;
+	outline: none;
+}
+
+#wordleInput::placeholder {
+	color: #967b4f;
+}
+
+#wordleInput:focus {
+	border-color: #ffca28;
+	box-shadow: 0 0 0 3px rgba(255, 202, 40, 0.25);
+}
+
+.wordle-message {
+	text-align: center;
+	font-size: 1em;
+	color: #7d6149;
+	min-height: 1.4em;
 }
