@@ -1,6 +1,6 @@
 const words = ['POMPOM', 'MUFFIN', 'MACAROON', 'BAGEL', 'SCONE', 'EIMBEAN', 'ILOVEYOU', 'DRINKWATER'];
-const GRID_ROWS = 8;
-const GRID_COLS = 8;
+const GRID_ROWS = 14;
+const GRID_COLS = 10;
 
 let grid = [];
 let selectedCells = [];
