@@ -10,13 +10,22 @@
 </head>
 
 <body>
+	<div class="hero">
+		<h1>POM POM THEMED WORD SEARCH!!!</h1>
+		<p class="subtitle">I hope you like the theme! You'll have to complete this word search for a hint!</p>
+	</div>
 	<div class="container">
-		<h1></h1>
 		<div class="content">
 			<div class="puzzle-section">
-				<h2>Find the Hidden Words:</h2>
+				<h2 class="word-list-header">WORDS TO FIND</h2>
+				<p class="subtitle" style="font-size: small; padding-top: 0px;">Tap to select letters, or press & hold to drag. Hit reset at the bottom if you get bugged. Good luck!! <span class="wave">MUAHAHAHA</span></p>
 				<div id="wordList" class="word-list"></div>
 				<div id="grid" class="grid"></div>
+			</div>
+			<div id="completionMessage" class="completion hidden">
+				<h2>YAY! YOU COMPLETED IT!!</h2>
+				<p class="completion-sub"><b>Your hint:</b> The cover of the present hides more than what you can see</p>
+				<p class="completion-sub-2">Thanks sm for playing, message me if you need any help!</p>
 			</div>
 			<button id="resetBtn" class="reset-btn">Reset Puzzle</button>
 		</div>

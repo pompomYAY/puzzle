@@ -1,8 +1,13 @@
-const words = ['POMPOM', 'ATELIER', 'EIMBEAN', 'GENSHIN', 'GRID', 'FIND', 'WORD', 'GAME'];
+const words = ['POMPOM', 'ATELIER', 'EIMBEAN', 'GENSHIN', 'CHEETO', 'MILO', 'WORD', 'GAME'];
 
 let grid = [];
 let selectedCells = [];
 let foundWords = new Set();
+let isDragging = false;
+let isTouchDrag = false;
+let lastDragKey = null;
+let dragStartTime = 0;
+let globalListenersBound = false;
 
 function initializePuzzle() {
 	// Create a 10x10 grid
@@ -91,15 +96,69 @@ function renderGrid() {
 			cell.textContent = grid[i][j];
 			cell.dataset.row = i;
 			cell.dataset.col = j;
-			cell.addEventListener('click', () => selectCell(i, j, cell));
-			cell.addEventListener('mouseenter', () => hoverCell(i, j, cell));
+			
+			// Mouse events
+			cell.addEventListener('mousedown', (e) => startDrag(i, j, cell, e));
+			cell.addEventListener('mouseenter', () => dragOver(i, j, cell));
+			cell.addEventListener('mouseup', () => endDrag());
+			
+			// Touch events
+			cell.addEventListener('touchstart', (e) => startDrag(i, j, cell, e));
+			cell.addEventListener('touchmove', (e) => handleTouchMove(e));
+			cell.addEventListener('touchend', () => endDrag());
+			
 			gridElement.appendChild(cell);
 		}
 	}
+	
+	// Global mouse/touch end listeners
+	if (!globalListenersBound) {
+		document.addEventListener('mouseup', endDrag);
+		document.addEventListener('touchend', endDrag);
+		globalListenersBound = true;
+	}
 }
 
-function selectCell(row, col, cellElement) {
+function startDrag(row, col, cellElement, event) {
+	event.preventDefault();
+	isDragging = true;
+	isTouchDrag = event.type.startsWith('touch');
+	lastDragKey = null;
+	dragStartTime = Date.now();
+	toggleCell(row, col);
+}
+
+function dragOver(row, col, cellElement) {
+	if (isDragging && !isTouchDrag) {
+		toggleCell(row, col);
+	}
+}
+
+function endDrag() {
+	if (isDragging) {
+		isDragging = false;
+		isTouchDrag = false;
+		lastDragKey = null;
+		checkForWords();
+	}
+}
+
+function handleTouchMove(event) {
+	if (!isDragging) return;
+	event.preventDefault();
+	const touch = event.touches[0];
+	const element = document.elementFromPoint(touch.clientX, touch.clientY);
+	
+	if (element && element.classList.contains('cell')) {
+		const row = parseInt(element.dataset.row);
+		const col = parseInt(element.dataset.col);
+		toggleCell(row, col);
+	}
+}
+
+function toggleCell(row, col) {
 	const cellKey = `${row},${col}`;
+	if (cellKey === lastDragKey) return; // avoid rapid re-toggles on hover
 	const isSelected = selectedCells.some(c => c.key === cellKey);
 	
 	if (isSelected) {
@@ -107,13 +166,9 @@ function selectCell(row, col, cellElement) {
 	} else {
 		selectedCells.push({ row, col, key: cellKey });
 	}
-	
-	updateCellDisplay();
-	checkForWords();
-}
 
-function hoverCell(row, col, cellElement) {
-	// Visual feedback on hover is handled by CSS
+	lastDragKey = cellKey;
+	updateCellDisplay();
 }
 
 function updateCellDisplay() {
@@ -169,8 +224,32 @@ function markWordAsFound(word) {
 		}
 		
 		renderWordList();
+		checkCompletion();
 	}
 }
+
+function checkCompletion() {
+	if (foundWords.size === words.length) {
+		showCompletionMessage();
+	}
+}
+
+function showCompletionMessage() {
+	const puzzleSection = document.querySelector('.puzzle-section');
+	if (!puzzleSection) return;
+
+	const completion = document.getElementById('completionMessage');
+	const resetBtn = document.getElementById('resetBtn');
+
+	if (resetBtn) resetBtn.remove();
+	if (completion) {
+		puzzleSection.classList.add('hidden');
+		completion.classList.remove('hidden');
+	}
+}
+// showCompletionMessage()
+
+window.showCompletionMessage = showCompletionMessage;
 
 function renderWordList() {
 	const wordListElement = document.getElementById('wordList');
@@ -234,7 +313,40 @@ function isPartOfWord(row, col, word) {
 	return false;
 }
 
-document.getElementById('resetBtn').addEventListener('click', initializePuzzle);
+const resetBtn = document.getElementById('resetBtn')
+if (resetBtn) {
+	resetBtn.addEventListener('click', initializePuzzle);
+}
+
+function applyWaveEffect(element) {
+	const text = element.textContent;
+	element.innerHTML = '';
+	
+	let delay = 0;
+	for (let char of text) {
+		if (char === ' ') {
+			element.appendChild(document.createTextNode(' '));
+		} else {
+			const span = document.createElement('span');
+			span.className = 'wave-letter';
+			span.textContent = char;
+			span.style.animationDelay = `${delay * 0.08}s`;
+			element.appendChild(span);
+		}
+		delay++;
+	}
+}
 
 // Initialize the puzzle on page load
-document.addEventListener('DOMContentLoaded', initializePuzzle);
+document.addEventListener('DOMContentLoaded', () => {
+	initializePuzzle();
+	
+	// Apply wave effect to all titles
+	const h1 = document.querySelector('h1');
+	const h2s = document.querySelectorAll('h2');
+	const waveTexts = document.querySelectorAll('.wave');
+	waveTexts.forEach(el => applyWaveEffect(el));
+	
+	if (h1) applyWaveEffect(h1);
+	h2s.forEach(h2 => applyWaveEffect(h2));
+});
