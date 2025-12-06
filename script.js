@@ -1,4 +1,4 @@
-const words = ['POMPOM']; //'MUFFIN', 'MACAROON', 'BAGEL', 'SCONE', 'EIMBEAN', 'ILOVEYOU', 'DRINKWATER'];
+const words = ['POMPOM', 'MUFFIN', 'MACAROON', 'BAGEL', 'SCONE', 'EIMBEAN', 'ILOVEYOU', 'DRINKWATER'];
 const GRID_ROWS = 8;
 const GRID_COLS = 8;
 
