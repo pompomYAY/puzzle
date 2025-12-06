@@ -1,5 +1,5 @@
-const words = ['POMPOM', 'MUFFIN', 'MACAROON', 'BAGEL', 'SCONE', 'ATELIER', 'EIMBEAN', 'POKEMON', 'MILO', 'ILOVEYOU', 'DRINKWATER'];
-const GRID_ROWS = 10;
+const words = ['POMPOM', 'MUFFIN', 'MACAROON', 'BAGEL', 'SCONE', 'EIMBEAN', 'ILOVEYOU', 'DRINKWATER'];
+const GRID_ROWS = 14;
 const GRID_COLS = 10;
 
 let grid = [];
