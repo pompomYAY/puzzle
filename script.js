@@ -33,11 +33,11 @@ function placeWords() {
 		{ dx: -1, dy: 1 }
 	];
 	
-	for (const word of words) {
+	for (const word of words.copyWithin(0).sort(() => Math.random() - 0.5)) {
 		let placed = false;
 		let attempts = 0;
 		
-		while (!placed && attempts < 100) {
+		while (!placed && attempts < 800) {
 			const direction = directions[Math.floor(Math.random() * directions.length)];
 			const row = Math.floor(Math.random() * GRID_ROWS);
 			const col = Math.floor(Math.random() * GRID_COLS);

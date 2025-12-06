@@ -95,6 +95,12 @@ h1 {
 	-webkit-text-stroke: 0.35px rgba(255, 255, 255, 0.35);
 }
 
+.subtitle.subtitle-compact {
+	font-size: 0.95em;
+	padding-top: 0;
+	margin-bottom: 8px;
+}
+
 h2 {
 	text-align: center;
 	color: #d9a560;
@@ -184,6 +190,11 @@ h2 {
 	line-height: 1.4;
 }
 
+.completion-sub.no-top-pad {
+	margin-top: 0;
+	padding-top: 0;
+}
+
 .completion-sub-2,
 #completion-sub {
 	margin-top: 12px;
@@ -247,27 +258,23 @@ h2 {
 	50% { transform: translateY(-4px); }
 }
 
-@keyframes wave-slow {
-	0%, 100% { transform: translateY(0); }
-	50% { transform: translateY(-4px); }
-}
-
 .wave-letter {
 	display: inline-block;
 	animation: wave 1.6s ease-in-out infinite;
 }
 
 h1 .wave-letter {
-	animation: wave-slow 2s ease-in-out infinite;
+	animation: wave 2s ease-in-out infinite;
 }
 
-.reset-btn {
+
+.reset-btn,
+.next-game-btn {
 	padding: 12px 30px;
 	background: #ffd54f;
 	color: #6d4c41;
 	border: none;
 	border-radius: 20px;
-	font-size: 1.4em;
 	font-weight: bold;
 	cursor: pointer;
 	transition: transform 0.2s ease, box-shadow 0.25s ease, background 0.25s ease;
@@ -275,14 +282,23 @@ h1 .wave-letter {
 	box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3);
 }
 
-.reset-btn:hover {
+.reset-btn:hover,
+.next-game-btn:hover {
 	background: #ffca28;
 	transform: translateY(-2px) scale(1.01);
 	box-shadow: 0 6px 15px rgba(255, 193, 7, 0.45);
 }
 
-.reset-btn:active {
+.reset-btn:active,
+.next-game-btn:active {
 	transform: translateY(0) scale(0.99);
+}
+
+.reset-btn { font-size: 1.4em; }
+
+.next-game-btn {
+	font-size: 1.2em;
+	margin-top: 15px;
 }
 
 #confetti-container {
@@ -317,31 +333,6 @@ h1 .wave-letter {
 	padding: 20px;
 	background: rgba(255, 254, 247, 0.5);
 	border-radius: 12px;
-}
-
-.next-game-btn {
-	padding: 12px 30px;
-	background: #ffd54f;
-	color: #6d4c41;
-	border: none;
-	border-radius: 20px;
-	font-size: 1.2em;
-	font-weight: bold;
-	cursor: pointer;
-	transition: transform 0.2s ease, box-shadow 0.25s ease, background 0.25s ease;
-	align-self: center;
-	box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3);
-	margin-top: 15px;
-}
-
-.next-game-btn:hover {
-	background: #ffca28;
-	transform: translateY(-2px) scale(1.01);
-	box-shadow: 0 6px 15px rgba(255, 193, 7, 0.45);
-}
-
-.next-game-btn:active {
-	transform: translateY(0) scale(0.99);
 }
 
 .clicker-container {
