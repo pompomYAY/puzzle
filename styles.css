@@ -5,6 +5,10 @@
 	-webkit-tap-highlight-color: transparent;
 }
 
+html, body {
+	overflow-x: hidden;
+}
+
 :root {
 	color-scheme: light;
 }
@@ -18,7 +22,7 @@ body {
 	justify-content: center;
 	align-items: center;
 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-	padding: 10px;
+	padding: 4px;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
@@ -64,6 +68,7 @@ h2 {
 	flex-wrap: wrap;
 	gap: 8px;
 	justify-content: center;
+	align-items: center;
 	margin-bottom: 10px;
 	padding: 12px;
 	background: #fff8e1;
@@ -72,12 +77,12 @@ h2 {
 }
 
 .word-item {
-	padding: 12px 22px;
+	padding: 8px 12px;
 	background: #ffd54f;
 	color: #8d6e63;
 	border-radius: 15px;
 	font-weight: 600;
-	font-size: 1.2em;
+	font-size: 1.1em;
 	transition: all 0.3s ease;
 	user-select: none;
 	box-shadow: 0 2px 5px rgba(255, 193, 7, 0.2);
@@ -93,10 +98,10 @@ h2 {
 .grid {
 	display: grid;
 	grid-template-columns: repeat(10, 1fr);
-	gap: 4px;
-	padding: 8px;
+	gap: 2px;
+	padding: 4px;
 	background: #fff8e1;
-	border-radius: 15px;
+	border-radius: 6px;
 	justify-items: center;
 	width: 98%;
 	margin: 0 auto;
@@ -111,8 +116,8 @@ h2 {
 	align-items: center;
 	justify-content: center;
 	background: #ffffff;
-	border: 2px solid #ffe082;
-	border-radius: 8px;
+	border: 1px solid #ffe082;
+	border-radius: 6px;
 	font-weight: bold;
 	font-size: clamp(16px, 4.5vw, 24px);
 	cursor: pointer;
